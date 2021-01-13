@@ -18,7 +18,7 @@ EOF
 exit
 fi
 
-inotifywait -qme create,moved_to $1 --format "%f" |
+inotifywait -qme create,moved_to $1 --format "%f" | grep '.fast5$' --line-buffered |
        	while read filename; do
 		filename=`echo $filename | cut -d '.' -f1`
 		deepnano2_caller.py --output $2/$filename.fastq.tmp --reads $1/$filename.fast5 --output-format fastq --network-type 48 --beam-size 5
