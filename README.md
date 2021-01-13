@@ -32,7 +32,7 @@ Start the basecaller watchdog:
 cd <nanocrop-project-dir>
 
 conda activate deepnano-blitz
-./basecall_continuous_reads <input-directory> /rampart/SARS-CoV-2/data/fastq/pass/
+./basecall_continuous_reads <input-directory> rampart/SARS-CoV-2/data/fastq/pass/
 ```
 
 Start RAMPART analysis in new terminal window:
