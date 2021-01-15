@@ -12,7 +12,7 @@ Install deepnano-blitz using following instructions: https://github.com/fmfi-com
 
 Install nanocrop helper repository:
 
-`git clone https://github.com/fmfi-compbio/deepnano-blitz.git`
+`git clone https://github.com/fmfi-compbio/nanocrop.git`
 
 Install dependencies for RedHat:
 `dnf install inotify-tools`
