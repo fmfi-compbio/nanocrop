@@ -6,19 +6,23 @@ This is a helper repository supporting a toolchain used for real-time monitoring
 
 Install Miniconda package manager using system package manager: https://docs.conda.io/projects/conda/en/latest/user-guide/install/rpm-debian.html
 
-Install RAMPART using following instructions: https://artic-network.github.io/rampart/docs/installation.html
+Install Rust programming language:
 
-Install deepnano-blitz using following instructions: https://github.com/fmfi-compbio/deepnano-blitz
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup default nightly-2021-01-03
+```
 
 Install nanocrop helper repository:
 
-`git clone https://github.com/fmfi-compbio/nanocrop.git`
+```
+git clone https://github.com/fmfi-compbio/nanocrop.git
+cd nanocrop
 
-Install dependencies for RedHat:
-`dnf install inotify-tools`
+conda env create -f environment.yml
+conda activate nanocrop
+```
 
-Install dependencies for Debian:
-`apt-get install inotify-tools`
 
 Web browser needs to be installed on workstation performing RAMPART analysis.
 
