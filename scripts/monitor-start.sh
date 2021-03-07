@@ -88,7 +88,12 @@ then
 	echo -n "Select a number or type the sequencing run name [1, 2, 3, 4]: "
 
 	read seq_run_dir
-	if [ $seq_run_dir -le 4 ] 2> /dev/null ;
+	while [ "$seq_run_dir" = "" ]; do
+		echo -n "Select a number or type the sequencing run name [1, 2, 3, 4]: "
+		read seq_run_dir
+	done
+
+	if [ $seq_run_dir -le 4 ] 2> /dev/null;
 	then
 		seq_run_dir=$(echo "$run_choices" | head -n $seq_run_dir | tail -n 1 | cut -f2)
 	else
@@ -120,18 +125,23 @@ then
 	echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
 
 	read protocol
+	while [ "$protocol" = "" ]; do
+		echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
+		read protocol
+	done
+
 	if [ $protocol -le 4 ] 2> /dev/null;
 	then
 		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$(echo "$protocol_choices" | head -n $protocol | tail -n 1 | cut -f2))
 	else
 		if [ ! -d "$config_path/$protocol_dir/$protocol" ];
-                then
-                        echo -e "RAMPART protocol directory \"$config_path/$protocol_dir/$protocol\" does NOT exist!\nExiting..."
-                        exit 1
-                fi
+       		then
+            		echo -e "RAMPART protocol directory \"$config_path/$protocol_dir/$protocol\" does NOT exist!\nExiting..."
+            		exit 1
+        	fi
 
 		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$protocol)
-        fi
+    	fi
 	
 	echo -e "Setting RAMPART protocol $protocol_conf_dir\n"
 fi
