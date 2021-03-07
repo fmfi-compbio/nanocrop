@@ -13,11 +13,11 @@ function process_job_queue {
 		then
 			flock $job_queue -c "cat $job_queue > $job_queue.tmp; > $job_queue"
 			filename=$(basename $(cat $job_queue.tmp | cut -d '.' -f1))
-			deepnano2_caller.py --output $output_dir/$filename.fastq.tmp 											\
-					    		--reads $(cat $job_queue.tmp) --threads $cpu_cores 									\
-								--output-format $output_format --network-type $network_type							\
-								--beam-size $beam_size --beam-cut-threshold $beam_cut_threshold						\
-								2> /dev/null
+			deepnano2_caller.py --output $output_dir/$filename.fastq.tmp 					\
+					    --reads $(cat $job_queue.tmp) --threads $cpu_cores 				\
+					    --output-format $output_format --network-type $network_type			\
+					    --beam-size $beam_size --beam-cut-threshold $beam_cut_threshold		\
+					    2> /dev/null
 			mv $output_dir/$filename.fastq.tmp $output_dir/$filename.fastq
 		else
 			sleep 10
@@ -35,7 +35,7 @@ Passes basecalled sequences to RAMPART visualizing tool.
 
 Usage: monitor-start.sh [-h] [CONFIG_FILE]
 
-CONFIG_FILE		Path to nanocrop configuration file. (Default one in ~nanocrop/config/).
+CONFIG_FILE		Path to nanocrop configuration file.
 
 If successful, tool-chain is initialized and running in the background. 
 In order to terminate monitoring tool-chain at any time execute monitoring-stop.sh.
@@ -88,7 +88,7 @@ then
 	echo -n "Select a number or type the sequencing run name [1, 2, 3, 4]: "
 
 	read seq_run_dir
-	if [ $seq_run_dir -le 4 ];
+	if [ $seq_run_dir -le 4 ] 2> /dev/null ;
 	then
 		seq_run_dir=$(echo "$run_choices" | head -n $seq_run_dir | tail -n 1 | cut -f2)
 	else
@@ -120,7 +120,7 @@ then
 	echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
 
 	read protocol
-	if [ $protocol -le 4 ];
+	if [ $protocol -le 4 ] 2> /dev/null;
 	then
 		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$(echo "$protocol_choices" | head -n $protocol | tail -n 1 | cut -f2))
 	else

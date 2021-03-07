@@ -7,7 +7,7 @@ if [ -f "$pid_file" ];
 then
 	source $pid_file
 else
-	echo "No active tool-chain found!\nExiting..."
+	echo -e "No active tool-chain found!\nExiting..."
 	exit 1
 fi
 
