@@ -28,26 +28,25 @@ Web browser needs to be installed on workstation performing RAMPART analysis.
 
 ## Toolchain execution
 
-Toolchain will use `basecall_continuous_reads.sh` script to watch a designated input folder for `.fast5` files being continuously created during sequencing run. For every `.fast5` file `deepnano-blitz` basecaller is invoked. Basecaller parameters in the script are fixed and set rather for short basecalling times than output accuracy. Please adjust basecaller parameters in the script manually according to your needs. Basecaller output is stored in `output folder`, which should be also an input folder for RAMPART pipeline. This is by default `rampart/SARS-CoV-2/data/fastq/pass/`. RAMPART will watch input folder configured for its pipeline and process `.fastq` files as they are created. Using its configuration and protocol RAMPART will demultiplex obtained reads and align them to the reference sequence provided. Thus monitoring current results of sequencing run such as reference genome coverage in real time.
+Toolchain will watch a designated input folder for `fast5` files being continuously created during sequencing run. For every `fast5` file `deepnano-blitz` basecaller is invoked. If more than one `fast5` file is created while basecaller was busy, next batch composed of those files will be processed in parallel assuming more than one CPU core is enabled for basecalling in configuration. Basecaller output is stored in `output folder`, which should be an input folder for the RAMPART pipeline at the same time. This is by default `rampart/SARS-CoV-2/SARS-CoV-2-400bp/data/fastq/pass/`. RAMPART will watch input folder configured for its pipeline and process any `fastq` files as they are created. Using its configuration and protocol RAMPART will demultiplex obtained reads and align them to the reference sequence provided. Thus monitoring current results of sequencing run such as reference genome coverage per barcoded sample in real time.
 
-Start the basecaller watchdog:
+General toolchain parameters and basecaller parameters are specified in configuration file. Default configuration is stored in `config/run_configuration.cfg`. Rampart configuration is performed via its protocol and run configuration both found in rampart directory containing separate configuration per experiment.
+
+Initialize the toolchain:
 
 ```
 cd <nanocrop-project-dir>
 
-conda activate deepnano-blitz
-./basecall_continuous_reads <input-directory> rampart/SARS-CoV-2/data/fastq/pass/
+conda activate nanocrop
+./scripts/monitor-start.sh config/run_configuration.cfg
 ```
 
-Start RAMPART analysis in new terminal window:
+`monitor-start.sh` initializer starts the toolchain components in background and returns. To terminate the toolchain once experiment is over, run:
 
 ```
-cd <nanocrop-project-dir>/rampart/SARS-CoV-2/data/
-
-conda activate artic-rampart
-rampart --protocol ../protocol/
+scripts/monitor-stop.sh
 ```
 
-RAMPART graphical output is available at `http://localhost:3000`. 
+Visualization of sequencing-run monitoring is done by RAMPART graphical output and available at `http://localhost:3000`. 
 
-Now the toolchain is prepared for the sequencing run.
+Report issues at `<matej.fedor.mf@gmail.com>`.
