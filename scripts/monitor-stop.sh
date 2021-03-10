@@ -12,7 +12,7 @@ else
 fi
 
 kill -9 $watchdog_pid
-kill -9 $(ps -f | grep "inotifywait -qme create,moved_to /tmp/reads --format %f" | head -n 1 | tr -s " " | cut -d' ' -f2)
+kill -9 $(ps -f | grep "inotifywait -qme create,moved_to $watched_dir --format %f" | head -n 1 | tr -s " " | cut -d' ' -f2)
 kill -9 $job_processor_pid
 
 if [ ! -z "$rampart_pid" ];

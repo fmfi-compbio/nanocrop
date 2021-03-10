@@ -58,9 +58,15 @@ else
 	exit 1
 fi
 
-if [ ! -d "$seq_dir" ];
+if [ ! -d "$seq_dir" ] && [ -z "$input_dir" ];
 then
 	echo -e "ERROR: Directory containing sequencing runs \"$seq_dir\" does NOT exist!\nExiting..."
+	exit 1
+fi
+
+if [ ! -d "$input_dir" ] && [ ! -z "$input_dir" ];
+then
+	echo -e "ERROR: Basecaller input directory \"$input_dir\" does NOT exist!\nExiting..."
 	exit 1
 fi
 
@@ -70,13 +76,17 @@ then
 	exit 1
 fi
 
-if [ ! -d "$config_path/$output_dir" ];
+if [ ! -d "$config_path/$protocol_conf_dir" ] && [ ! -z "$protocol_conf_dir" ];
+then
+	echo -e "ERROR: RAMPART protocol \"$config_path/$protocol_conf_dir\" does NOT exist!\nExiting..."
+	exit 1
+fi
+
+if [ ! -d "$config_path/$output_dir" ] && [ ! -z "$output_dir" ];
 then
 	echo -e "ERROR: Basecaller output directory \"$config_path/$output_dir\" does NOT exist!\nExiting..."
 	exit 1
 fi
-
-output_dir=$(realpath -e "$config_path/$output_dir")
 
 echo -e "CPU cores used for basecalling: $cpu_cores\n"
 
@@ -146,6 +156,21 @@ then
 	echo -e "Setting RAMPART protocol $protocol_conf_dir\n"
 fi
 
+if [ -z "$output_dir" ];
+then
+	echo -e "Basecaller output directory NOT set.\nTrying default directory..."
+	if [ -d "$protocol_conf_dir/data/fastq/pass/" ];
+	then
+		output_dir="$protocol_conf_dir/data/fastq/pass/"
+		echo -e "Setting default basecaller output directory $output_dir\n"
+	else
+		echo -e "ERROR: Default basecaller output direcotry $protocol_conf_dir/data/fastq/pass/ does NOT exist!\nExiting..."
+		exit 1
+	fi
+else
+	output_dir=$(realpath -e "$config_path/$output_dir")
+fi
+
 # Initialize job queue and monitoring tool-chain
 echo -e "Initializing..."
 
@@ -160,6 +185,7 @@ flock -x 200
 echo "Starting input directory watchdog..."
 monitor_input_directory &
 echo "watchdog_pid=$!" > $pid_list
+echo "watched_dir=$input_dir" >> $pid_list
 
 if [ ! -z "$(ls -A "$input_dir")" ];
 then
