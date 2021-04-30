@@ -1,0 +1,11 @@
+{
+  "title": "SARS-CoV-2 Sequencing Run 2500bp",
+  "basecalledPath": "fastq/pass",
+  "simulateRealTime": true,
+  "clearAnnotated": true,
+  "displayOptions": {
+    "coverageThresholds": {
+      ">200x": 200, ">100x": 100, ">20x": 20, "0x": 0
+    }
+  }
+}
