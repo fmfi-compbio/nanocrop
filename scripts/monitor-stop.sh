@@ -1,7 +1,10 @@
 #/bin/bash
 
 echo "Terminating monitoring tool-chain..."
+
 pid_file="/tmp/nanocrop_pid_list.txt"
+job_file="/tmp/nanocrop_job_queue.txt"
+job_file_tmp="/tmp/nanocrop_job_queue.txt.tmp"
 
 if [ -f "$pid_file" ];
 then
@@ -21,6 +24,12 @@ then
 fi
 
 rm $pid_file
-rm /tmp/nanocrop_job_queue.txt
+rm $job_file
+
+if [ -f "$job_file_tmp" ];
+then
+	rm $job_file_tmp
+fi
 
 echo "DONE! Bye!"
+exit 0

@@ -70,27 +70,68 @@ then
 	exit 1
 fi
 
-if [ ! -d "$config_path/$protocol_dir" ];
+if ([ ! -d "$config_path/$protocol_dir" ] || [ -z "$protocol_dir" ]) && [ -z "$protocol_conf_dir" ];
 then
-	echo -e "ERROR: Directory containing RAMPART protocols \"$config_path/$protocol_dir\" does NOT exist!\nExiting..."
+	echo -e "ERROR: Directory containing RAMPART protocols \"$config_path/$protocol_dir\" does NOT exist or is NOT set!\nExiting..."
 	exit 1
 fi
 
-if [ ! -d "$config_path/$protocol_conf_dir" ] && [ ! -z "$protocol_conf_dir" ];
+if [ ! -d "$config_path/$protocol_conf_dir" ];
 then
 	echo -e "ERROR: RAMPART protocol \"$config_path/$protocol_conf_dir\" does NOT exist!\nExiting..."
 	exit 1
 fi
 
-if [ ! -d "$config_path/$output_dir" ] && [ ! -z "$output_dir" ];
+if [ ! -d "$output_dir" ];
 then
-	echo -e "ERROR: Basecaller output directory \"$config_path/$output_dir\" does NOT exist!\nExiting..."
+	echo -e "ERROR: Basecaller output directory \"$output_dir\" does NOT exist!\nExiting..."
+	exit 1
+fi
+
+if [ ! -d "$config_path/$annotations_dir" ];
+then
+	echo -e "ERROR: Annotations directory \"$annotations_dir\" does NOT exist!\nExiting..."
 	exit 1
 fi
 
 echo -e "CPU cores used for basecalling: $cpu_cores\n"
 
-if [ -z "$input_dir" ] || [ ! -d "$input_dir" ];
+if [ -z "$protocol_conf_dir" ];
+then
+	protocol_choices=$(ls -t1 $config_path/$protocol_dir | head -n 4 | cat -n)
+	echo "Select a RAMPART protocol (showing 4 latest entries):"
+	echo "$protocol_choices"
+	echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
+
+	read protocol
+	while [ "$protocol" = "" ]; do
+		echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
+		read protocol
+	done
+
+	if [ $protocol -le 4 ] 2> /dev/null;
+	then
+		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$(echo "$protocol_choices" | head -n $protocol | tail -n 1 | cut -f2))
+	else
+		if [ ! -d "$config_path/$protocol_dir/$protocol" ];
+       		then
+            		echo -e "RAMPART protocol directory \"$config_path/$protocol_dir/$protocol\" does NOT exist!\nExiting..."
+            		exit 1
+        	fi
+
+		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$protocol)
+    	fi
+	
+	echo -e "Setting RAMPART protocol $protocol_conf_dir\n"
+fi
+
+if [ -z "$annotations_dir" ];
+then
+	annotations_dir=$config_path/../annotations/
+	echo -e "Setting RAMPART annotations directory $annotations_dir\n"
+fi
+
+if [ -z "$input_dir" ];
 then
 	run_choices=$(ls -t1 $seq_dir | head -n 4 | cat -n)
 	echo "Select a sequencing run to monitor (showing 4 latest entries):"
@@ -127,50 +168,6 @@ then
 	echo -e "Setting $input_dir as input directory for fast5 files.\n"
 fi
 
-if [ -z "$protocol_conf_dir" ] || [ ! -d "$protocol_conf_dir" ];
-then
-	protocol_choices=$(ls -t1 $config_path/$protocol_dir | head -n 4 | cat -n)
-	echo "Select a RAMPART protocol (showing 4 latest entries):"
-	echo "$protocol_choices"
-	echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
-
-	read protocol
-	while [ "$protocol" = "" ]; do
-		echo -n "Select a number or type the protocol name [1, 2, 3, 4]: "
-		read protocol
-	done
-
-	if [ $protocol -le 4 ] 2> /dev/null;
-	then
-		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$(echo "$protocol_choices" | head -n $protocol | tail -n 1 | cut -f2))
-	else
-		if [ ! -d "$config_path/$protocol_dir/$protocol" ];
-       		then
-            		echo -e "RAMPART protocol directory \"$config_path/$protocol_dir/$protocol\" does NOT exist!\nExiting..."
-            		exit 1
-        	fi
-
-		protocol_conf_dir=$(realpath -e $config_path/$protocol_dir/$protocol)
-    	fi
-	
-	echo -e "Setting RAMPART protocol $protocol_conf_dir\n"
-fi
-
-if [ -z "$output_dir" ];
-then
-	echo -e "Basecaller output directory NOT set.\nTrying default directory..."
-	if [ -d "$protocol_conf_dir/data/fastq/pass/" ];
-	then
-		output_dir="$protocol_conf_dir/data/fastq/pass/"
-		echo -e "Setting default basecaller output directory $output_dir\n"
-	else
-		echo -e "ERROR: Default basecaller output direcotry $protocol_conf_dir/data/fastq/pass/ does NOT exist!\nExiting..."
-		exit 1
-	fi
-else
-	output_dir=$(realpath -e "$config_path/$output_dir")
-fi
-
 # Initialize job queue and monitoring tool-chain
 echo -e "Initializing..."
 
@@ -203,8 +200,8 @@ echo "job_processor_pid=$!" >> $pid_list
 
 echo -e "Starting RAMPART...\n"
 location=$(pwd)
-cd $protocol_conf_dir/data
-rampart --protocol ../protocol > /dev/null &
+cd $protocol_conf_dir/run
+rampart --protocol ../protocol --basecalledPath $output_dir --annotatedPath $location/$annotations_dir > /dev/null &
 rampart_pid=$!
 
 sleep 1

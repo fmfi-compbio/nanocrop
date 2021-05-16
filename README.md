@@ -1,6 +1,6 @@
 # nanocrop
 
-This is a helper repository supporting a toolchain used for real-time monitoring of sequencing runs. The toolchain consists of [deepnano-blitz](https://github.com/fmfi-compbio/deepnano-blitz) basecaller used for MinKnow-compatible `.fastq` files production and [RAMPART](https://artic.network/rampart) for sequencing runs analysis. The repository contains RAMPART protocol and configuration for SARS-CoV-2 virus sequencing as well as some helper scripts. RAMPART protocol is slightly adjusted version of the one located [here](https://github.com/artic-network/artic-ncov2019), although another primer scheme using 2000bp long amplicons is provided in nanocrop and available for use.
+This is a helper repository supporting a toolchain used for real-time monitoring of sequencing runs. The toolchain consists of [deepnano-blitz](https://github.com/fmfi-compbio/deepnano-blitz) basecaller used for MinKnow-compatible `.fastq` files production and [RAMPART](https://artic.network/rampart) for sequencing runs analysis. The repository contains RAMPART protocol and configuration for SARS-CoV-2 virus sequencing as well as some helper scripts. RAMPART protocol is slightly adjusted version of the one located [here](https://github.com/artic-network/artic-ncov2019), although other primer schemes using 2000bp long amplicons and 2500bp long amplicons are provided in nanocrop and available for use.
 
 ## Toolchain installation
 
