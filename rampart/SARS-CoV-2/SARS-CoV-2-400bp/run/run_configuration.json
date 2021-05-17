@@ -1,6 +1,5 @@
 {
-  "title": "SARS-CoV-2 Sequencing Run",
-  "basecalledPath": "fastq/pass",
+  "title": "SARS-CoV-2 Sequencing Run 400bp",
   "simulateRealTime": true,
   "clearAnnotated": true,
   "displayOptions": {
